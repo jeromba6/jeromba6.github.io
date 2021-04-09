@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<script>
+			let buffer = new SharedArrayBuffer(10);
+			let reeks = new Uint8Array(buffer);
+
+			Atomics.store(reeks, 0, 42);
+
+			let werker1 = new Worker('script1.js');
+			let werker2 = new Worker('script2.js');
+
+			werker1.addEventListener('message', function(msg){
+				console.log('Antwoord van 1: ' + msg.data);
+			});
+
+			werker2.addEventListener('message', function(msg){
+				console.log('Antwoord van 2: ' + msg.data);
+			});
+
+			// Buffer delen met de workers
+			werker1.postMessage(buffer);
+			werker2.postMessage(buffer);
+
+			setTimeout(function(){
+				Atomics.store(reeks, 0, 10);
+			}, 5000);
+		</script>
+	</head>
+
+</html>
